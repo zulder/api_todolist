@@ -1,0 +1,15 @@
+# Indica que este é o arquivo raiz
+root = true
+
+# Aplica a todos os arquivos
+[*]
+charset = utf-8
+indent_style = space
+indent_size = 2
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Exceções para arquivos Markdown
+[*.md]
+trim_trailing_whitespace = false
