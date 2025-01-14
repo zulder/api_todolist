@@ -2,11 +2,15 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import AppError from './shared/errors/AppError';
 
+import itemRoutes from './routes/itemRoutes';
+
 const app = express();
 
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use('/api/items', itemRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: 'Route not found' });
