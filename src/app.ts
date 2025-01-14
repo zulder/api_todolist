@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import AppError from './shared/errors/AppError';
+import setupSwagger from './api/swagger/swagger';
 
 import itemRoutes from './routes/itemRoutes';
 
@@ -9,6 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+//config swagger
+setupSwagger(app);
 
 app.use('/api/items', itemRoutes);
 

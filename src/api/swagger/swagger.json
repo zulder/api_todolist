@@ -1,0 +1,45 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API de Itens",
+    "version": "1.0.0",
+    "description": "Documentação da API para gerenciamento de itens."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3333",
+      "description": "Servidor local de desenvolvimento"
+    }
+  ],
+  "paths": {
+    "/items": {
+      "get": {
+        "summary": "Lista todos os itens",
+        "description": "Retorna uma lista de todos os itens cadastrados.",
+        "responses": {
+          "200": {
+            "description": "Lista de itens",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer"
+                      },
+                      "name": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
