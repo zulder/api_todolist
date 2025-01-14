@@ -1,9 +1,9 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "API de Itens",
+    "title": "API para um TODO List",
     "version": "1.0.0",
-    "description": "Documentação da API para gerenciamento de itens."
+    "description": "Esta é a documentação da API para um sistema de controle de atividades do dia a dia. Ela permite criar, listar, atualizar e deletar itens em uma lista de tarefas."
   },
   "servers": [
     {
@@ -12,13 +12,14 @@
     }
   ],
   "paths": {
-    "/items": {
+    "/api/items": {
       "get": {
-        "summary": "Lista todos os itens",
-        "description": "Retorna uma lista de todos os itens cadastrados.",
+        "summary": "Retrieve all items",
+        "description": "Esta rota retorna uma lista de todos os itens registrados no sistema. Pode ser usada para visualizar todas as atividades pendentes.",
+        "tags": ["Items"],
         "responses": {
           "200": {
-            "description": "Lista de itens",
+            "description": "A lista de itens foi recuperada com sucesso.",
             "content": {
               "application/json": {
                 "schema": {
@@ -27,11 +28,451 @@
                     "type": "object",
                     "properties": {
                       "id": {
-                        "type": "integer"
+                        "type": "integer",
+                        "example": 1,
+                        "description": "Identificador único do item."
                       },
                       "name": {
-                        "type": "string"
+                        "type": "string",
+                        "example": "Estudar JavaScript",
+                        "description": "Nome da tarefa ou atividade."
+                      },
+                      "description": {
+                        "type": "string",
+                        "example": "Aprender sobre API's",
+                        "description": "Descrição detalhada da atividade."
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Nenhum item registrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Não há itens registrados",
+                      "description": "Mensagem indicando que não há itens na lista."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro interno do servidor",
+                      "description": "Mensagem genérica de erro quando algo inesperado ocorre no servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new item",
+        "description": "Esta rota cria um novo item, onde você pode fornecer um nome e uma descrição. Ideal para adicionar novas atividades à lista.",
+        "tags": ["Items"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Nova Tarefa",
+                    "description": "Nome da tarefa ou atividade a ser criada."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Descrição detalhada da tarefa.",
+                    "description": "Informações adicionais sobre a atividade."
+                  }
+                },
+                "required": ["name", "description"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Item criado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1,
+                      "description": "Identificador único do item recém-criado."
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Nova Tarefa",
+                      "description": "Nome do item criado."
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Descrição detalhada da tarefa.",
+                      "description": "Descrição fornecida para o item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação no corpo da solicitação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro nas credenciais",
+                      "description": "Mensagem geral de erro quando os dados enviados são inválidos."
+                    },
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "example": "name",
+                            "description": "Campo onde ocorreu o erro."
+                          },
+                          "error": {
+                            "type": "string",
+                            "example": "O nome é obrigatório",
+                            "description": "Mensagem de erro específica para o campo."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno do servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro interno do servidor",
+                      "description": "Mensagem genérica de erro quando ocorre algo inesperado no servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/items/{id}": {
+      "get": {
+        "summary": "Find an item by ID",
+        "description": "Esta rota permite buscar um item específico utilizando seu identificador único. Retorna as informações detalhadas sobre o item.",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "O identificador único do item que se deseja recuperar.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item encontrado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1,
+                      "description": "Identificador único do item."
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Tarefa de Estudo",
+                      "description": "Nome do item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Descrição da tarefa de estudo.",
+                      "description": "Informações adicionais sobre a tarefa."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação nos parâmetros da solicitação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Formato de ID inválido",
+                      "description": "Mensagem de erro caso o ID fornecido seja inválido."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Item não encontrado!",
+                      "description": "Mensagem indicando que o item não foi encontrado no banco de dados."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro interno do servidor",
+                      "description": "Mensagem genérica de erro quando ocorre algo inesperado no servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an item",
+        "description": "Atualiza um item existente, permitindo alterar seu nome e/ou descrição.",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "O identificador único do item a ser atualizado.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Tarefa Atualizada",
+                    "description": "Nome atualizado do item."
+                  },
+                  "description": {
+                    "type": "string",
+                    "example": "Descrição atualizada da tarefa.",
+                    "description": "Descrição atualizada do item."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item atualizado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1,
+                      "description": "Identificador único do item atualizado."
+                    },
+                    "name": {
+                      "type": "string",
+                      "example": "Tarefa Atualizada",
+                      "description": "Nome atualizado do item."
+                    },
+                    "description": {
+                      "type": "string",
+                      "example": "Descrição atualizada da tarefa.",
+                      "description": "Descrição atualizada do item."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro de validação no corpo da solicitação.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro nas credenciais",
+                      "description": "Mensagem geral de erro quando os dados enviados são inválidos."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Item não encontrado",
+                      "description": "Mensagem indicando que o item não foi encontrado para ser atualizado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro interno do servidor",
+                      "description": "Mensagem genérica de erro quando ocorre algo inesperado no servidor."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete an item",
+        "description": "Esta rota permite deletar um item específico a partir de seu identificador único.",
+        "tags": ["Items"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "O identificador único do item a ser deletado.",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item deletado com sucesso.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Item deletado com sucesso",
+                      "description": "Mensagem indicando que o item foi deletado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Item não encontrado.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Item não encontrado",
+                      "description": "Mensagem indicando que o item não foi encontrado para ser deletado."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro interno no servidor.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "example": "Erro interno do servidor",
+                      "description": "Mensagem genérica de erro quando ocorre algo inesperado no servidor."
                     }
                   }
                 }
