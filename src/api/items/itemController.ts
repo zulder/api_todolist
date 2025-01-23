@@ -49,6 +49,7 @@ export const getItemsController = async (req: Request, res: Response) => {
     }
     res.status(200).json(items);
   } catch (error) {
+    console.log(error);
     if (error instanceof AppError) {
       res.status(error.statusCode).json({ error: error.message });
       return;

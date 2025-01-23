@@ -7,7 +7,13 @@ import itemRoutes from './routes/itemRoutes';
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE'],
+    credentials: true,
+  }),
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
